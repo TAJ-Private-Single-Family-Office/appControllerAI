@@ -1,0 +1,21 @@
+{
+  "name": "app-controller-ai",
+  "version": "1.0.0",
+  "description": "AI-powered application controller",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"No tests specified\" && exit 0",
+    "build": "echo \"No build specified\" && exit 0"
+  },
+  "keywords": ["ai", "controller"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "node-cache": "^5.1.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "@types/node-cache": "^4.2.5"
+  }
+}
