@@ -1,31 +1,31 @@
-import { Prometheus } from 'prom-client';
+import { Counter, Gauge, Histogram, register } from 'prom-client';
 
 export class APIMonitoring {
-  private requestCounter: Prometheus.Counter;
-  private responseTimeHistogram: Prometheus.Histogram;
-  private errorCounter: Prometheus.Counter;
-  private rateLimit: Prometheus.Gauge;
+  private requestCounter: Counter;
+  private responseTimeHistogram: Histogram;
+  private errorCounter: Counter;
+  private rateLimit: Gauge;
 
   constructor() {
-    this.requestCounter = new Prometheus.Counter({
+    this.requestCounter = new Counter({
       name: 'wells_fargo_api_requests_total',
       help: 'Total number of requests made to Wells Fargo API',
       labelNames: ['endpoint'],
     });
 
-    this.responseTimeHistogram = new Prometheus.Histogram({
+    this.responseTimeHistogram = new Histogram({
       name: 'wells_fargo_api_response_time',
       help: 'Response time of Wells Fargo API calls',
       labelNames: ['endpoint'],
     });
 
-    this.errorCounter = new Prometheus.Counter({
+    this.errorCounter = new Counter({
       name: 'wells_fargo_api_errors_total',
       help: 'Total number of API errors',
       labelNames: ['type'],
     });
 
-    this.rateLimit = new Prometheus.Gauge({
+    this.rateLimit = new Gauge({
       name: 'wells_fargo_api_rate_limit',
       help: 'Current API rate limit remaining',
     });

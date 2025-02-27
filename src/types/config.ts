@@ -11,6 +11,9 @@ export interface ConfigOptions {
         cognitiveServicesKey: string;
         keyVaultUrl: string;
         aiAgent: AIAgentConfig;
+        monitoring: {
+            appInsightsConnString: string;
+        };
     };
     security: {
         encryptionKey: string;
@@ -22,5 +25,10 @@ export interface ConfigOptions {
             clientId: string;
             secret: string;
         };
+    };
+    blockchain: {
+        rpcUrl: string;
+        contractAddress: string;
+        abi: any[];
     };
 }

@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { config } from '../config/config';
-import { AIAgentRequest, AIAgentResponse } from '../types/ai';
+import { AIAgentRequest, AIAgentResponse, Suggestion } from '../types/ai';
 import { LoggingService } from './LoggingService';
+import { Logger } from './ai/Logger';
 
 export class AIAgentService {
     private readonly logger = LoggingService.getInstance();
@@ -33,12 +34,7 @@ export class AIAgentService {
                 metadata: response.data.metadata
             };
         } catch (error) {
-            this.logger.logError(error, { request });
-            return {
-                type: 'error',
-                content: 'Failed to process AI agent query',
-                metadata: { error: error.message }
-            };
+            return this.handleError(error, { request });
         }
     }
 
@@ -50,19 +46,24 @@ export class AIAgentService {
                 { headers: this.headers }
             );
             
-            return response.data.suggestions.map(s => ({
+            return response.data.suggestions.map((suggestion: Suggestion) => ({
                 type: 'suggestion',
-                content: s.text,
-                confidence: s.score,
-                metadata: s.metadata
+                content: suggestion.text,
+                confidence: suggestion.score,
+                metadata: suggestion.metadata
             }));
         } catch (error) {
-            this.logger.logError(error, { context });
-            return [{
-                type: 'error',
-                content: 'Failed to get suggestions',
-                metadata: { error: error.message }
-            }];
+            return [this.handleError(error, { context })];
         }
+    }
+
+    private handleError(error: unknown, context: Record<string, unknown>) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        this.logger.logError(new Error(errorMessage), context);
+        return {
+            type: 'error' as const,
+            content: errorMessage,
+            metadata: { error: errorMessage }
+        };
     }
 }

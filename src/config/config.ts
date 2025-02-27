@@ -1,31 +1,48 @@
 import { ConfigOptions } from '../types/config';
+import { AIAgentConfig } from '../types/ai';
+
+function requireEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Environment variable ${name} is required`);
+  }
+  return value;
+}
 
 export const config: ConfigOptions = {
-    wellsFargo: {
-        apiEndpoint: process.env.WF_API_ENDPOINT,
-        clientId: process.env.WF_CLIENT_ID,
-        clientSecret: process.env.WF_CLIENT_SECRET
+  wellsFargo: {
+    apiEndpoint: requireEnv('WF_API_ENDPOINT'),
+    clientId: requireEnv('WF_CLIENT_ID'),
+    clientSecret: requireEnv('WF_CLIENT_SECRET')
+  },
+  azure: {
+    tenantId: requireEnv('AZURE_TENANT_ID'),
+    cognitiveServicesKey: requireEnv('AZURE_COG_KEY'),
+    keyVaultUrl: requireEnv('AZURE_KEYVAULT_URL'),
+    aiAgent: {
+      resourceId: requireEnv('AZURE_AI_AGENT_RESOURCE_ID'),
+      endpoint: requireEnv('AZURE_AI_AGENT_ENDPOINT'),
+      apiVersion: '2023-05-01',
+      apiKey: requireEnv('AZURE_AI_AGENT_KEY')
     },
-    azure: {
-        tenantId: process.env.AZURE_TENANT_ID,
-        cognitiveServicesKey: process.env.AZURE_COG_KEY,
-        keyVaultUrl: process.env.AZURE_KEYVAULT_URL,
-        aiAgent: {
-            resourceId: process.env.AZURE_AI_AGENT_RESOURCE_ID,
-            endpoint: process.env.AZURE_AI_AGENT_ENDPOINT,
-            apiVersion: '2023-05-01',
-            apiKey: process.env.AZURE_AI_AGENT_KEY
-        }
-    },
-    security: {
-        encryptionKey: process.env.ENCRYPTION_KEY,
-        jwtSecret: process.env.JWT_SECRET,
-        mfaEnabled: true
-    },
-    services: {
-        plaid: {
-            clientId: process.env.PLAID_CLIENT_ID,
-            secret: process.env.PLAID_SECRET
-        }
+    monitoring: {
+      appInsightsConnString: requireEnv('AZURE_APPINSIGHTS_CONNECTION_STRING')
     }
+  },
+  security: {
+    encryptionKey: requireEnv('ENCRYPTION_KEY'),
+    jwtSecret: requireEnv('JWT_SECRET'),
+    mfaEnabled: process.env.MFA_ENABLED === 'true'
+  },
+  services: {
+    plaid: {
+      clientId: requireEnv('PLAID_CLIENT_ID'),
+      secret: requireEnv('PLAID_SECRET')
+    }
+  },
+  blockchain: {
+    rpcUrl: requireEnv('BLOCKCHAIN_RPC_URL'),
+    contractAddress: requireEnv('BLOCKCHAIN_CONTRACT_ADDRESS'),
+    abi: JSON.parse(requireEnv('BLOCKCHAIN_CONTRACT_ABI'))
+  }
 };

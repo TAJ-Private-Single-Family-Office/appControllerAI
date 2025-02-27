@@ -1,24 +1,26 @@
 import axios, { AxiosInstance } from 'axios';
 import { createHmac } from 'crypto';
 
+export interface WellsFargoConfig {
+  baseURL: string;
+  apiKey: string;
+  apiSecret: string;
+}
+
 export class WellsFargoAPIClient {
   private client: AxiosInstance;
   private apiKey: string;
   private apiSecret: string;
 
-  constructor(config: {
-    apiKey: string;
-    apiSecret: string;
-    baseURL: string;
-  }) {
+  constructor(config: WellsFargoConfig) {
     this.apiKey = config.apiKey;
     this.apiSecret = config.apiSecret;
     this.client = axios.create({
       baseURL: config.baseURL,
       headers: {
-        'Content-Type': 'application/json',
-        'X-API-Key': this.apiKey,
-      },
+        'Authorization': `Bearer ${this.apiKey}`,
+        'Content-Type': 'application/json'
+      }
     });
   }
 

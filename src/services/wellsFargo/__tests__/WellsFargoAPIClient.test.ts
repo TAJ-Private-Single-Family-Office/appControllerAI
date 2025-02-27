@@ -1,4 +1,4 @@
-import { WellsFargoAPIClient } from '../WellsFargoAPIClient';
+import { WellsFargoAPIClient, WellsFargoConfig } from '../WellsFargoAPIClient';
 import axios from 'axios';
 
 jest.mock('axios');
@@ -8,11 +8,12 @@ describe('WellsFargoAPIClient', () => {
   let client: WellsFargoAPIClient;
 
   beforeEach(() => {
-    client = new WellsFargoAPIClient({
-      apiKey: 'test-key',
-      apiSecret: 'test-secret',
+    const config: WellsFargoConfig = {
       baseURL: 'https://api.wellsfargo.test',
-    });
+      apiKey: 'test-key',
+      apiSecret: 'test-secret'
+    };
+    client = new WellsFargoAPIClient(config);
   });
 
   test('getAccountInfo makes correct API call', async () => {

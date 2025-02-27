@@ -1,13 +1,13 @@
-import { ethers } from 'ethers';
+import { ethers, Contract } from 'ethers';
 import { config } from '../config/config';
 
 export class BlockchainService {
-    private provider: ethers.providers.Provider;
-    private contract: ethers.Contract;
+    private provider: ethers.JsonRpcProvider;
+    private contract: Contract;
 
     constructor() {
-        this.provider = new ethers.providers.JsonRpcProvider(config.blockchain.rpcUrl);
-        this.contract = new ethers.Contract(
+        this.provider = new ethers.JsonRpcProvider(config.blockchain.rpcUrl);
+        this.contract = new Contract(
             config.blockchain.contractAddress,
             config.blockchain.abi,
             this.provider
@@ -31,8 +31,17 @@ export class BlockchainService {
         return events.map(event => this.parseEvent(event));
     }
 
-    private parseEvent(event: any): any {
-        // Parse blockchain event data
-        return {};
+    async getEvents(eventName: string, fromBlock: number): Promise<any[]> {
+        const filter = this.contract.filters[eventName]();
+        const events = await this.contract.queryFilter(filter, fromBlock);
+        return events.map((event: ethers.Log) => this.parseEvent(event));
+    }
+
+    private parseEvent(event: ethers.Log): any {
+        return {
+            transactionHash: event.transactionHash,
+            blockNumber: event.blockNumber,
+            args: event.args
+        };
     }
 }

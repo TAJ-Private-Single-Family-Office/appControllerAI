@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z, ZodError } from 'zod';
 import { BankingTransaction, TransactionType, TransactionStatus } from '../types/banking';
 
 export class ValidationService {
@@ -25,10 +25,20 @@ export class ValidationService {
             this.transactionSchema.parse(transaction);
             return { success: true };
         } catch (error) {
+            return this.handleValidationError(error);
+        }
+    }
+
+    private handleValidationError(error: unknown) {
+        if (error instanceof ZodError) {
             return {
                 success: false,
-                errors: error.errors.map(e => e.message)
+                errors: error.errors.map((e: z.ZodIssue) => e.message)
             };
         }
+        return {
+            success: false,
+            errors: ['Unknown validation error']
+        };
     }
 }

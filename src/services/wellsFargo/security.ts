@@ -8,7 +8,8 @@ export class SecurityService {
   private lastKeyRotation: number;
 
   constructor() {
-    this.rotateKey();
+    this.encryptionKey = randomBytes(32);
+    this.lastKeyRotation = Date.now();
   }
 
   private rotateKey() {

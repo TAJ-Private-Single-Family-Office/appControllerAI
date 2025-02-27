@@ -2,17 +2,17 @@ import WebSocket from 'ws';
 import { EventEmitter } from 'events';
 
 export class BankingWebSocketService {
-  private ws: WebSocket;
+  private ws!: WebSocket; // Use definite assignment assertion
   private events: EventEmitter;
   private reconnectAttempts: number = 0;
   private maxReconnectAttempts: number = 5;
 
   constructor(private url: string) {
     this.events = new EventEmitter();
-    this.connect();
+    this.initializeWebSocket();
   }
 
-  private connect() {
+  private initializeWebSocket() {
     this.ws = new WebSocket(this.url);
     
     this.ws.on('open', () => {
@@ -33,7 +33,7 @@ export class BankingWebSocketService {
       if (this.reconnectAttempts < this.maxReconnectAttempts) {
         setTimeout(() => {
           this.reconnectAttempts++;
-          this.connect();
+          this.initializeWebSocket();
         }, 1000 * Math.pow(2, this.reconnectAttempts));
       }
     });

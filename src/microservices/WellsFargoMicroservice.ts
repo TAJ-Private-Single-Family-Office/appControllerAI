@@ -28,7 +28,7 @@ export class WellsFargoMicroservice {
         const accountInfo = await this.service.getAccountInfo(req.params.id);
         res.json(accountInfo);
       } catch (error) {
-        res.status(500).json({ error: error.message });
+        this.handleError(error, res);
       }
     });
 
@@ -37,9 +37,23 @@ export class WellsFargoMicroservice {
         const result = await this.service.createTransaction(req.body);
         res.json(result);
       } catch (error) {
-        res.status(500).json({ error: error.message });
+        this.handleError(error, res);
       }
     });
+  }
+
+  private handleError(error: unknown, res: express.Response) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    res.status(500).json({ error: errorMessage });
+  }
+
+  async createTransaction(req: express.Request, res: express.Response) {
+    try {
+      const result = await this.service.processTransaction(req.body);
+      res.json(result);
+    } catch (error) {
+      this.handleError(error, res);
+    }
   }
 
   start(port: number) {

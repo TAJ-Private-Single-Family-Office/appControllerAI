@@ -1,4 +1,4 @@
-import { AzureKeyCredential, TextAnalyticsClient } from '@azure/ai-text-analytics';
+import { AzureKeyCredential, TextAnalyticsClient, SentimentResult } from '@azure/ai-text-analytics';
 import { config } from '../config/config';
 import { AIAgentService } from './AIAgentService';
 import { BankingTransaction } from '../types/banking';
@@ -17,7 +17,13 @@ export class AIService {
 
     async analyzeSentiment(text: string): Promise<string> {
         const results = await this.client.analyzeSentiment([text]);
-        return results[0].sentiment;
+        const result = results[0];
+        
+        if (result.error) {
+            throw new Error(`Sentiment analysis failed: ${result.error.message}`);
+        }
+        
+        return result.sentiment || 'neutral';
     }
 
     async predictSpending(accountId: string): Promise<number> {
@@ -27,12 +33,17 @@ export class AIService {
 
     async detectFraud(transaction: BankingTransaction): Promise<boolean> {
         const features = await this.extractFeatures(transaction);
-        const prediction = await this.client.runModel('fraud-detection', {
-            features,
-            modelVersion: '1.0'
+        const response = await this.aiAgent.processQuery({
+            query: 'fraud_detection',
+            context: { features }
         });
         
-        return prediction.fraudScore > 0.7;
+        if (response.type === 'error') {
+            throw new Error(`Fraud detection failed: ${response.content}`);
+        }
+        
+        const result = JSON.parse(response.content);
+        return result.fraudScore > 0.7;
     }
 
     private async extractFeatures(transaction: BankingTransaction): Promise<any> {
@@ -107,5 +118,20 @@ export class AIService {
             trend: this.calculateTrend(history),
             volatility: this.calculateVolatility(history)
         };
+    }
+
+    private calculateSeasonality(history: any[]): number {
+        // Implementation
+        return 0;
+    }
+
+    private calculateTrend(history: any[]): number {
+        // Implementation
+        return 0;
+    }
+
+    private calculateVolatility(history: any[]): number {
+        // Implementation
+        return 0;
     }
 }

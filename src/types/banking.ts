@@ -7,18 +7,14 @@ export interface AccountDetails {
 }
 
 export interface BankingTransaction {
-    id: string;
+    id?: string;
     fromAccount: string;
     toAccount: string;
     amount: number;
-    type: 'transfer' | 'deposit' | 'withdrawal' | 'payment';
+    type: TransactionType;
     timestamp: string;
-    status: 'pending' | 'completed' | 'failed';
-    metadata?: {
-        location?: string;
-        description?: string;
-        category?: string;
-    };
+    status: TransactionStatus;
+    metadata?: TransactionMetadata;
 }
 
 export interface AccountBalance {
@@ -37,13 +33,21 @@ export interface TransactionAnalytics {
 }
 
 export type TransactionType = 
-    | 'TRANSFER'
-    | 'PAYMENT'
-    | 'DEPOSIT'
-    | 'WITHDRAWAL';
+    | 'transfer'
+    | 'withdrawal'
+    | 'deposit'
+    | 'payment';
 
 export type TransactionStatus = 
-    | 'PENDING'
-    | 'COMPLETED'
-    | 'FAILED'
-    | 'REVERSED';
+    | 'pending'
+    | 'completed'
+    | 'failed'
+    | 'cancelled';
+
+export interface TransactionMetadata {
+    location?: string;
+    device?: string;
+    ipAddress?: string;
+    userAgent?: string;
+    [key: string]: any;
+}

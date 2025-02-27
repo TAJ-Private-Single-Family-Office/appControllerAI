@@ -2,15 +2,15 @@ import { ApplicationInsights } from '@microsoft/applicationinsights-web';
 import { config } from '../config/config';
 
 export class LoggingService {
-    private appInsights: ApplicationInsights;
     private static instance: LoggingService;
+    private appInsights: ApplicationInsights;
 
     private constructor() {
         this.appInsights = new ApplicationInsights({
             config: {
-                connectionString: config.azure.appInsightsConnString,
-                enableAutoRouteTracking: true,
-                enableRequestTrackingTelemetry: true
+                connectionString: config.azure.monitoring.appInsightsConnString,
+                enableCorsCorrelation: true,
+                enableRequestTracing: true
             }
         });
         this.appInsights.loadAppInsights();

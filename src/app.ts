@@ -3,26 +3,13 @@ import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import { BankingController } from './controllers/BankingController';
 import { LoggingService } from './services/LoggingService';
-import { rateLimiter, securityHeaders, validateRequest } from './middleware/security';
-
-/**
- * @swagger
- * /api/transactions:
- *   post:
- *     description: Process a new banking transaction
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Transaction'
- */
+import { rateLimiter, securityHeaders } from './middleware/security';
+import { validateRequest } from './middleware/auth';
 
 const app = express();
 const logger = LoggingService.getInstance();
 const bankingController = new BankingController();
+const swaggerDocs = require('./swagger.json');
 
 app.use(securityHeaders);
 app.use(rateLimiter);
@@ -34,7 +21,7 @@ app.use(express.json());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Protected routes
-app.use('/api', validateRequest);
+app.use('/api', validateRequest as express.RequestHandler);
 
 app.post('/api/transactions', (req, res) => bankingController.processTransaction(req, res));
 app.get('/api/accounts/:accountId', (req, res) => bankingController.getAccountDetails(req, res));
